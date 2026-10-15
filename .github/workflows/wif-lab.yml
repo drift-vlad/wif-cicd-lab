@@ -11,7 +11,20 @@ permissions:
 jobs:
   legacy-auth-simulation:
     runs-on: ubuntu-latest
-    steps:
+    steps:      
+      - name: Request GitHub OIDC token
+        env:
+          ACTIONS_ID_TOKEN_REQUEST_URL: ${{ env.ACTIONS_ID_TOKEN_REQUEST_URL }}
+          ACTIONS_ID_TOKEN_REQUEST_TOKEN: ${{ env.ACTIONS_ID_TOKEN_REQUEST_TOKEN }}
+        run: |
+          if [ -z "$ACTIONS_ID_TOKEN_REQUEST_URL" ] || [ -z "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" ]; then
+            echo "OIDC request variables are unavailable"
+            exit 1
+          fi
+
+          echo "GitHub OIDC request environment is available"
+          echo "Token value will not be displayed"
+
       - name: Simulate legacy credential usage
         env:
           LEGACY_CLOUD_KEY: ${{ secrets.LEGACY_CLOUD_KEY }}
