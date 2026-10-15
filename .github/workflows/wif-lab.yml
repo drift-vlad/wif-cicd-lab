@@ -8,14 +8,17 @@ permissions:
   contents: read
 
 jobs:
-  baseline:
+  legacy-auth-simulation:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Verify pipeline
+      - name: Simulate legacy credential usage
+        env:
+          LEGACY_CLOUD_KEY: ${{ secrets.LEGACY_CLOUD_KEY }}
         run: |
-          echo "CI/CD pipeline is running"
-          echo "Repository: $GITHUB_REPOSITORY"
-          echo "This is a safe authentication lab"
+          if [ -z "$LEGACY_CLOUD_KEY" ]; then
+            echo "Legacy credential is missing"
+            exit 1
+          fi
+
+          echo "Legacy credential is configured"
+          echo "Credential value is not displayed"
