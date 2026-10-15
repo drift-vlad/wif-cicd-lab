@@ -1,0 +1,21 @@
+
+name: WIF Security Lab
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify pipeline
+        run: |
+          echo "CI/CD pipeline is running"
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "This is a safe authentication lab"
