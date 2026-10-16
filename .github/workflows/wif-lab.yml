@@ -12,18 +12,20 @@ jobs:
   oidc-inspection:
     runs-on: ubuntu-latest
     steps:
-      - name: Request GitHub OIDC token
+      - name: Request and verify GitHub OIDC token
         uses: actions/github-script@v7
         with:
           script: |
-            const response = await fetch(
-              `${process.env.ACTIONS_ID_TOKEN_REQUEST_URL}&audience=lab`,
-              {
-                headers: {
-                  Authorization: `Bearer ${process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN}`
-                }
-              }
+            const tokenUrl = new URL(
+              process.env.ACTIONS_ID_TOKEN_REQUEST_URL
             );
+            tokenUrl.searchParams.set('audience', 'lab');
+
+            const response = await fetch(tokenUrl, {
+              headers: {
+                Authorization: `Bearer ${process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN}`
+              }
+            });
 
             if (!response.ok) {
               throw new Error(`OIDC request failed: ${response.status}`);
@@ -31,16 +33,29 @@ jobs:
 
             const result = await response.json();
             const token = result.value;
-
-            // Decode claims only; never print the token itself.
             const payload = token.split('.')[1];
             const claims = JSON.parse(
               Buffer.from(payload, 'base64url').toString('utf8')
             );
 
-            console.log("GitHub OIDC token obtained successfully");
-            console.log("Issuer:", claims.iss);
-            console.log("Audience:", claims.aud);
-            console.log("Repository:", claims.repository);
-            console.log("Ref:", claims.ref);
-            console.log("Subject:", claims.sub);
+            const expectedRepository = 'drift-vlad/wif-cicd-lab';
+            const expectedRef = 'refs/heads/main';
+
+            if (claims.repository !== expectedRepository) {
+              throw new Error('Repository claim did not match');
+            }
+
+            if (claims.ref !== expectedRef) {
+              throw new Error('Branch claim did not match');
+            }
+
+            if (claims.aud !== 'lab') {
+              throw new Error('Audience claim did not match');
+            }
+
+            console.log('GitHub OIDC token obtained successfully');
+            console.log('Issuer:', claims.iss);
+            console.log('Audience:', claims.aud);
+            console.log('Repository claim matched');
+            console.log('Branch claim matched');
+            console.log('OIDC identity checks passed');
