@@ -1,0 +1,27 @@
+name: NPM Cache Lab
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cache-demo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js and npm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Generate lock file and install dependencies
+        run: npm install --package-lock-only && npm ci
+
+      - name: Run test
+        run: node -e "console.log('Node.js CI test passed')"
