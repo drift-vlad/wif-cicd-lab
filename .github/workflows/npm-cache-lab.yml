@@ -3,6 +3,9 @@ name: NPM Cache Lab
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
