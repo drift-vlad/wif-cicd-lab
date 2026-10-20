@@ -1,3 +1,4 @@
+
 name: NPM Cache Lab
 
 on:
@@ -25,3 +26,21 @@ jobs:
 
       - name: Run test
         run: node -e "console.log('Node.js CI test passed')"
+
+      - name: Create visual pipeline summary
+        if: always()
+        run: |
+          echo "# 🚀 NPM Cache Lab — Pipeline Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Pipeline details" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Check | Result |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Repository | $GITHUB_REPOSITORY |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Branch | $GITHUB_REF_NAME |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Node.js | 22 |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Workflow run | [View run #$GITHUB_RUN_NUMBER]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## What this pipeline does" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Sets up Node.js and npm caching" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Installs project dependencies" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Runs the automated test" >> "$GITHUB_STEP_SUMMARY"
