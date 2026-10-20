@@ -25,4 +25,3 @@ jobs:
 
       - name: Run test
         run: node -e "console.log('Node.js CI test passed')"
-```
